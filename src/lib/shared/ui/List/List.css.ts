@@ -19,3 +19,7 @@ export const list = style({
   flexDirection: "column",
   gap: "10px",
 });
+
+export const addButton = style({
+  marginTop: "10px",
+});
