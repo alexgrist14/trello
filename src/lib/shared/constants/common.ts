@@ -1,4 +1,4 @@
-export const API_URL = "http://146.120.195.34:3111/api";
+export const API_URL = "https://sunmait.mooncellar.space/api";
 
 export const bg = "rgb(13, 17, 23)";
 export const overlayColor = "rgba(13, 17, 23, 0.8)";
