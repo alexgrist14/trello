@@ -7,7 +7,6 @@ import * as styles from "./Textarea.css";
 export const Textarea: FC<ITextareaProps> = ({
   className,
   classNameField,
-  clearErrors,
   resize = false,
   style,
   children,
@@ -33,9 +32,6 @@ export const Textarea: FC<ITextareaProps> = ({
           } else if (ref) {
             ref.current = node;
           }
-        }}
-        onClick={() => {
-          if (clearErrors && props.name) clearErrors(props.name);
         }}
         onChange={(e) => {
           onChange?.(e);

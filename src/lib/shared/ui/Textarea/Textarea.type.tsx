@@ -1,5 +1,4 @@
-import { DetailedHTMLProps, TextareaHTMLAttributes } from "react";
-import type { FieldError } from "react-hook-form";
+import { type DetailedHTMLProps, type TextareaHTMLAttributes } from "react";
 
 type ITextareaType = Pick<
   DetailedHTMLProps<
@@ -27,8 +26,6 @@ type ITextareaType = Pick<
 >;
 
 export interface ITextareaProps extends ITextareaType {
-  error?: FieldError;
-  clearErrors?: any;
   resize?: boolean;
   classNameField?: string;
   isDisableAutoResize?: boolean;

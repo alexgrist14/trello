@@ -1,4 +1,4 @@
-import { RefObject, useEffect } from "react";
+import { type RefObject, useEffect } from "react";
 
 const useCloseEvents = (
   refs: RefObject<HTMLDivElement | null>[],
@@ -6,15 +6,18 @@ const useCloseEvents = (
 ): void => {
   useEffect(() => {
     const clickHandler = (e: MouseEvent): void => {
-      refs.reduce(
-        (result, ref) =>
-          ref.current?.contains(e.target as Node) ? (result = false) : result,
-        true
-      ) && callback();
+      const isOutside = refs.every(
+        (ref) => !ref.current?.contains(e.target as Node)
+      );
+      if (isOutside) {
+        callback();
+      }
     };
 
     const keydownHandler = (e: KeyboardEvent): void => {
-      e.key === "Escape" && callback();
+      if (e.key === "Escape") {
+        callback();
+      }
     };
 
     document.addEventListener("mousedown", clickHandler);
