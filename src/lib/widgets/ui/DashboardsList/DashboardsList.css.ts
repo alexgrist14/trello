@@ -32,7 +32,7 @@ export const card = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: `1px solid black`,
+  outline: `1px solid black`,
   transition: "0.2s",
   userSelect: "none",
   cursor: "pointer",
@@ -40,7 +40,7 @@ export const card = style({
   selectors: {
     "&:hover, &:focus-visible": {
       filter: "brightness(1.2)",
-      borderColor: accent,
+      outlineColor: accent,
       scale: "1.02",
     },
   },

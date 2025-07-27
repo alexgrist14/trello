@@ -4,6 +4,7 @@ import type { ITask } from "../../types/tasks.type";
 
 interface ListsInitialStateType {
   lists: IList[];
+  isLoading?: boolean;
 }
 
 const initialState: ListsInitialStateType = {
@@ -14,6 +15,9 @@ const listsSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
     setLists: (state, action: PayloadAction<IList[]>) => {
       state.lists = action.payload;
     },
@@ -23,6 +27,19 @@ const listsSlice = createSlice({
       );
       if (index !== -1) {
         state.lists[index] = { ...state.lists[index], ...action.payload };
+      }
+    },
+    addTaskToList: (state, action: PayloadAction<ITask>) => {
+      const { listId } = action.payload;
+      const listIndex = state.lists.findIndex((list) => list.id === listId);
+      console.log(listIndex);
+      if (listIndex !== -1) {
+        const list = state.lists[listIndex];
+        if (list.tasks) {
+          list.tasks.push(action.payload);
+        } else {
+          list.tasks = [action.payload];
+        }
       }
     },
     updateTaskInList: (state, action: PayloadAction<ITask>) => {
@@ -37,6 +54,15 @@ const listsSlice = createSlice({
           console.log(action.payload);
           state.lists[listIndex].tasks[taskIndex] = action.payload;
         }
+      }
+    },
+    removeTaskFromList: (state, action: PayloadAction<ITask>) => {
+      const { id, listId } = action.payload;
+      const listIndex = state.lists.findIndex((list) => list.id === listId);
+      if (listIndex !== -1) {
+        state.lists[listIndex].tasks = state.lists[listIndex].tasks.filter(
+          (task) => task.id !== id
+        );
       }
     },
     addList: (state, action: PayloadAction<IList>) => {

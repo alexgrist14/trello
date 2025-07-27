@@ -1,17 +1,20 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type FC } from "react";
 import Input from "../../../../shared/ui/Input/Input";
 import Button from "../../../../shared/ui/Button/Button";
 import { dashboardApi } from "../../../../shared/api/dashboard";
 import type { IDashboard } from "../../../../shared/types/dashboard.type";
 import * as styles from "./DashboardForm.css";
+import { useAppDispatch, useAppSelector } from "../../../../shared/store";
+import { DashboardsActions } from "../../../../shared/store/slices/dashboardsSlice";
 
-type Props = {
+interface DashboardFormProps {
   dashboard?: IDashboard;
-  setDashboards: Dispatch<SetStateAction<IDashboard[]>>;
   callback?: (dashboard: IDashboard) => void;
-};
+}
 
-const DashboardForm = ({ dashboard, callback, setDashboards }: Props) => {
+const DashboardForm: FC<DashboardFormProps> = ({ dashboard, callback }) => {
+  const dispatch = useAppDispatch();
+  const { dashboards } = useAppSelector((state) => state.dashboards);
   const [value, setValue] = useState(dashboard?.title || "");
 
   return (
@@ -21,14 +24,17 @@ const DashboardForm = ({ dashboard, callback, setDashboards }: Props) => {
         onClick={() => {
           if (dashboard) {
             dashboardApi.update(dashboard.id, { title: value }).then((dash) => {
-              setDashboards((dashboards) =>
-                dashboards.map((d) => (d.id === dash.id ? dash : d))
+              dispatch(
+                DashboardsActions.setDashboards(
+                  dashboards.map((d) => (d.id === dash.id ? dash : d))
+                )
               );
+
               callback?.(dash);
             });
           } else {
             dashboardApi.create({ title: value }).then((dash) => {
-              setDashboards((dashboards) => [...dashboards, dash]);
+              dispatch(DashboardsActions.setDashboards([...dashboards, dash]));
               callback?.(dash);
             });
           }

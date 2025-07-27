@@ -7,14 +7,14 @@ export const input = style({
   height: "40px",
   width: "100%",
   backgroundColor: "#262c36",
-  border: "1px solid transparent",
-  transition: "border 0.2s",
+  outline: "1px solid transparent",
+  transition: "outline 0.2s",
   selectors: {
     "&:hover, &:focus-visible": {
-      borderColor: "black",
+      outlineColor: "black",
     },
     "&:focus": {
-      borderColor: accent,
+      outline: `1px solid ${accent}`,
     },
   },
 });

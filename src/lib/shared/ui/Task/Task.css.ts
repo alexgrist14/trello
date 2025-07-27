@@ -22,9 +22,7 @@ export const containerVariants = styleVariants({
     transform: "scale(1.02)",
   },
   canDrop: {
-    backgroundColor: "#2c7a7bff",
-    borderColor: "#2c7a7bff",
-    borderWidth: "2px",
-    borderStyle: "dashed",
+    backgroundColor: accent,
+    outline: `2px dashed ${accent}`,
   },
 });

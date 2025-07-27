@@ -7,23 +7,29 @@ import { taskApi } from "../../api/tasks";
 import { useAppDispatch } from "../../store";
 import { listsActions } from "../../store/slices/listsSlice";
 import { dashboardApi } from "../../api/dashboard";
+import { SvgDesc } from "../../svg/SvgDesc";
 
 interface TaskProps {
+  onClick?: () => void;
   dashboardId: number;
   task: ITask;
 }
 
-const Task: FC<TaskProps> = ({ task, dashboardId }) => {
+const Task: FC<TaskProps> = ({ task, dashboardId, onClick }) => {
   const dispatch = useAppDispatch();
-  const { id, title, taskOrder, listId } = task;
+  const { id, title, taskOrder, listId, description } = task;
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: "task",
       drop: (data: Pick<ITask, "id" | "listId">) => {
-        console.log(data, task);
-        taskApi.reorder(data.id, task.taskOrder).then(() => {
+        if (data.id === task.id) return;
+
+        dispatch(listsActions.setIsLoading(true));
+
+        taskApi.reorder(data.id, task.taskOrder, task.listId).then(() => {
           dashboardApi.getById(dashboardId).then((board) => {
+            dispatch(listsActions.setIsLoading(false));
             dispatch(listsActions.setLists(board.lists));
           });
         });
@@ -50,6 +56,7 @@ const Task: FC<TaskProps> = ({ task, dashboardId }) => {
 
   return (
     <div
+      onClick={onClick}
       ref={(node) => {
         drag(node);
         drop(node);
@@ -61,6 +68,7 @@ const Task: FC<TaskProps> = ({ task, dashboardId }) => {
       )}
     >
       <h3>{title}</h3>
+      {description && <SvgDesc />}
     </div>
   );
 };

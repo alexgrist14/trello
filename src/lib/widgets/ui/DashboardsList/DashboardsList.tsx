@@ -3,7 +3,7 @@ import { dashboardApi } from "../../../shared/api/dashboard";
 import type { IDashboard } from "../../../shared/types/dashboard.type";
 import Button from "../../../shared/ui/Button/Button";
 import * as styles from "./DashboardsList.css";
-import { useAppDispatch } from "../../../shared/store";
+import { useAppDispatch, useAppSelector } from "../../../shared/store";
 import { DashboardsActions } from "../../../shared/store/slices/dashboardsSlice";
 import { SvgTrash } from "../../../shared/svg/SvgTrash";
 import { Modal } from "../../../shared/ui/Modal/Modal";
@@ -13,23 +13,24 @@ import { Link } from "react-router";
 
 const DashboardsList = () => {
   const dispatch = useAppDispatch();
+  const { dashboards } = useAppSelector((state) => state.dashboards);
+
   const [isModalActive, setIsModalActive] = useState(false);
   const [dashboard, setDashboard] = useState<IDashboard>();
-  const [dashboards, setDashboards] = useState<IDashboard[]>([]);
 
   useEffect(() => {
-    dashboardApi.getAll().then((data) => {
-      setDashboards(data);
-      dispatch(DashboardsActions.setDashboards(data));
-    });
-  }, [dispatch]);
+    if (dashboards !== undefined && dashboards.length === 0) {
+      dashboardApi.getAll().then((data) => {
+        dispatch(DashboardsActions.setDashboards(data));
+      });
+    }
+  }, [dispatch, dashboards]);
 
   return (
     <div className={styles.list}>
       <Modal isActive={isModalActive} onClose={() => setIsModalActive(false)}>
         <DashboardForm
           dashboard={dashboard}
-          setDashboards={setDashboards}
           callback={() => {
             setIsModalActive(false);
           }}
@@ -43,10 +44,13 @@ const DashboardsList = () => {
               <Button
                 style={{ position: "absolute", top: "5px", right: "5px" }}
                 isOnlyIcon
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   dashboardApi.remove(dashboard.id).then(() => {
-                    setDashboards(
-                      dashboards.filter((d) => d.id !== dashboard.id)
+                    dispatch(
+                      DashboardsActions.setDashboards(
+                        dashboards.filter((d) => d.id !== dashboard.id)
+                      )
                     );
                   });
                 }}
@@ -57,7 +61,8 @@ const DashboardsList = () => {
               <Button
                 style={{ position: "absolute", top: "5px", right: "32px" }}
                 isOnlyIcon
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   setDashboard(dashboard);
                   setIsModalActive(true);
                 }}
