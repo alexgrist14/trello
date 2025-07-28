@@ -68,10 +68,13 @@ const DashboardContent = () => {
       </Modal>
       <div className={styles.buttons}>
         <Link to={"/"}>
-          <Button>Back to dashboards</Button>
+          <Button className={styles.addListButton}>Back to dashboards</Button>
         </Link>
         <div ref={activityButtonRef}>
-          <Button onClick={() => setIsActivityActive(!isActivityActive)}>
+          <Button
+            className={styles.addListButton}
+            onClick={() => setIsActivityActive(!isActivityActive)}
+          >
             Activity
           </Button>
         </div>

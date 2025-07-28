@@ -32,4 +32,5 @@ export const buttons = style({
   gap: "10px",
   maxHeight: "31px",
   maxWidth: "300px",
+  marginBottom: "20px",
 });
