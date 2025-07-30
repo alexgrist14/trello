@@ -27,13 +27,11 @@ export const title = style({
 export const list = style({
   display: "flex",
   flexDirection: "column",
-  gap: "10px",
 });
 
 export const addButton = style({
   gap: "5px",
   height: "40px",
-  marginTop: "10px",
   selectors: {
     "div &": {
       justifyContent: "flex-start",

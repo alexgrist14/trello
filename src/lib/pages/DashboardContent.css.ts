@@ -12,18 +12,21 @@ export const container = style({
   display: "flex",
   gap: "20px",
   width: "100%",
+  paddingBlock: "20px",
   overflowY: "hidden",
 });
 
 export const list = style({
   position: "relative",
-  width: "284px",
+  width: "272px",
+  flexShrink: 0,
   overflowY: "auto",
 });
 
 export const addListButton = style({
   height: "40px",
-  maxWidth: "284px",
+  width: "272px",
+  minWidth: "272px",
 });
 
 export const buttons = style({

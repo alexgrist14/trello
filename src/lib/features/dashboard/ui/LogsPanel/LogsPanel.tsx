@@ -28,19 +28,20 @@ const LogsPanel = ({ isActive, boardId, ref }: Props) => {
     >
       <h3>Activity</h3>
       <div className={styles.container}>
-        {logs &&
-          logs.map((log) => (
-            <div className={styles.log} key={log.id}>
-              <div className={styles.text}>
-                <SvgProfile className={styles.svg} />
-                <div>
-                  <span className={styles.title}>Anonymous user </span>{" "}
-                  {log.action} {log.entity} {log.title}
+        {logs && logs.length
+          ? logs.map((log, i) => (
+              <div className={styles.log} key={`${log.id} + ${i}`}>
+                <div className={styles.text}>
+                  <SvgProfile className={styles.svg} />
+                  <div>
+                    <span className={styles.title}>Anonymous user </span>{" "}
+                    {log.action} {log.entity} {log.title}
+                  </div>
                 </div>
+                <span> {getHumanDate(log.createdAt)}</span>
               </div>
-              <span> {getHumanDate(log.createdAt)}</span>
-            </div>
-          ))}
+            ))
+          : null}
       </div>
     </div>
   );

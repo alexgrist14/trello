@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { dashboardApi } from "../../../shared/api/dashboard";
-import type { IDashboard } from "../../../shared/types/dashboard.type";
+import type { Dashboard } from "../../../shared/types/dashboard.type";
 import Button from "../../../shared/ui/Button/Button";
 import * as styles from "./DashboardsList.css";
 import { useAppDispatch, useAppSelector } from "../../../shared/store";
@@ -10,13 +10,15 @@ import { Modal } from "../../../shared/ui/Modal/Modal";
 import DashboardForm from "../../../features/dashboard/ui/DashboardForm/DashboardForm";
 import { SvgPen } from "../../../shared/svg/SvgPen";
 import { Link } from "react-router";
+import ConfirmForm from "../../../shared/ui/ConfirmForm/ConfirmForm";
 
 const DashboardsList = () => {
   const dispatch = useAppDispatch();
   const { dashboards } = useAppSelector((state) => state.dashboards);
 
   const [isModalActive, setIsModalActive] = useState(false);
-  const [dashboard, setDashboard] = useState<IDashboard>();
+  const [isConfirmActive, setIsConfirmActive] = useState(false);
+  const [dashboard, setDashboard] = useState<Dashboard>();
 
   useEffect(() => {
     if (dashboards !== undefined && dashboards.length === 0) {
@@ -25,6 +27,20 @@ const DashboardsList = () => {
       });
     }
   }, [dispatch, dashboards]);
+
+  const handleDeleteDashboard = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (dashboard) {
+      dashboardApi.remove(dashboard.id).then(() => {
+        dispatch(
+          DashboardsActions.setDashboards(
+            dashboards.filter((d) => d.id !== dashboard.id)
+          )
+        );
+      });
+    }
+    setIsConfirmActive(false);
+  };
 
   return (
     <div className={styles.list}>
@@ -36,9 +52,22 @@ const DashboardsList = () => {
           }}
         />
       </Modal>
+      <Modal
+        isActive={isConfirmActive}
+        onClose={() => setIsConfirmActive(false)}
+      >
+        <ConfirmForm
+          message={`Are you sure you want to delete the dashboard "${dashboard?.title}"?`}
+          onConfirm={handleDeleteDashboard}
+          onCancel={() => setIsConfirmActive(false)}
+        />
+      </Modal>
       <div className={styles.cards}>
-        {dashboards.map((dashboard) => (
-          <Link to={`/dashboard/${dashboard.id}`}>
+        {dashboards.map((dashboard, i) => (
+          <Link
+            key={`${dashboard.id} + ${i}`}
+            to={`/dashboard/${dashboard.id}`}
+          >
             <div key={dashboard.id} className={styles.card}>
               <h3>{dashboard.title}</h3>
               <Button
@@ -46,13 +75,8 @@ const DashboardsList = () => {
                 isOnlyIcon
                 onClick={(e) => {
                   e.preventDefault();
-                  dashboardApi.remove(dashboard.id).then(() => {
-                    dispatch(
-                      DashboardsActions.setDashboards(
-                        dashboards.filter((d) => d.id !== dashboard.id)
-                      )
-                    );
-                  });
+                  setDashboard(dashboard);
+                  setIsConfirmActive(true);
                 }}
                 color="danger"
               >

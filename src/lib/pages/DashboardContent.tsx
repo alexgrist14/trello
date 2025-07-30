@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, useParams } from "react-router";
 import { dashboardApi } from "../shared/api/dashboard";
-import List from "../shared/ui/List/List";
+import ListItem from "../shared/ui/ListItem/ListItem";
 import * as styles from "./DashboardContent.css";
 import { useAppDispatch, useAppSelector } from "../shared/store";
 import { listsActions } from "../shared/store/slices/listsSlice";
@@ -9,13 +9,14 @@ import Button from "../shared/ui/Button/Button";
 import { SvgPlus } from "../shared/svg/SvgPlus";
 import { Modal } from "../shared/ui/Modal/Modal";
 import ListForm from "../features/list/ui/ListForm/ListForm";
-import type { IList } from "../shared/types/lists.type";
+import type { List } from "../shared/types/lists.type";
 import { SvgTrash } from "../shared/svg/SvgTrash";
 import { SvgPen } from "../shared/svg/SvgPen";
 import { listApi } from "../shared/api/lists";
 import LogsPanel from "../features/dashboard/ui/LogsPanel/LogsPanel";
 import { Loader } from "../shared/ui/Loader";
 import useCloseEvents from "../shared/hooks/useCloseEvents";
+import ConfirmForm from "../shared/ui/ConfirmForm/ConfirmForm";
 
 const DashboardContent = () => {
   const { id } = useParams();
@@ -23,10 +24,11 @@ const DashboardContent = () => {
   const { lists } = useAppSelector((state) => state.lists);
   const [isActivityActive, setIsActivityActive] = useState(false);
   const [isModalActive, setIsModalActive] = useState(false);
-  const [list, setList] = useState<IList>();
+  const [list, setList] = useState<List>();
   const logsRef = useRef<HTMLDivElement>(null);
   const activityButtonRef = useRef<HTMLDivElement>(null);
   const [isFirstRender, setIsFirstRender] = useState(true);
+  const [isConfirmActive, setIsConfirmActive] = useState(false);
 
   const isExists = useMemo(() => {
     return !id || lists?.some((list) => list.boardId === +id);
@@ -51,6 +53,16 @@ const DashboardContent = () => {
     }
   }, [dispatch, id, isExists]);
 
+  const handleDeleteList = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (list) {
+      listApi.remove(list.id).then(() => {
+        dispatch(listsActions.setLists(lists.filter((l) => l.id !== list.id)));
+      });
+    }
+    setIsConfirmActive(false);
+  };
+
   if (isFirstRender || !id) {
     return <Loader />;
   }
@@ -64,6 +76,16 @@ const DashboardContent = () => {
           callback={() => {
             setIsModalActive(false);
           }}
+        />
+      </Modal>
+      <Modal
+        isActive={isConfirmActive}
+        onClose={() => setIsConfirmActive(false)}
+      >
+        <ConfirmForm
+          message={`Are you sure you want to delete the list "${list?.title}"?`}
+          onConfirm={handleDeleteList}
+          onCancel={() => setIsConfirmActive(false)}
         />
       </Modal>
       <div className={styles.buttons}>
@@ -93,13 +115,8 @@ const DashboardContent = () => {
                 isOnlyIcon
                 onClick={(e) => {
                   e.preventDefault();
-                  listApi.remove(list.id).then(() => {
-                    dispatch(
-                      listsActions.setLists(
-                        lists.filter((l) => l.id !== list.id)
-                      )
-                    );
-                  });
+                  setList(list);
+                  setIsConfirmActive(true);
                 }}
                 color="danger"
               >
@@ -122,7 +139,7 @@ const DashboardContent = () => {
               >
                 <SvgPen />
               </Button>
-              <List {...list} />
+              <ListItem {...list} />
             </div>
           ))
         ) : (

@@ -1,9 +1,9 @@
-import type { IList } from "./lists.type";
+import type { List } from "./lists.type";
 
-export interface IDashboard {
+export interface Dashboard {
   id: number;
   title: string;
   createdAt: string;
   updatedAt: string;
-  lists: IList[];
+  lists: List[];
 }

@@ -1,9 +1,9 @@
 import axios from "axios";
 import { API_URL } from "../constants/common";
-import type { ITask } from "../types/tasks.type";
+import type { Task } from "../types/tasks.type";
 
 const create = async (listId: number, data: { title: string }) => {
-  const response = await axios.post<ITask>(
+  const response = await axios.post<Task>(
     `${API_URL}/lists/${listId}/tasks`,
     data
   );
@@ -14,7 +14,7 @@ const update = async (
   id: number,
   data: { title: string; description?: string }
 ) => {
-  const response = await axios.patch<ITask>(`${API_URL}/tasks/${id}`, data);
+  const response = await axios.patch<Task>(`${API_URL}/tasks/${id}`, data);
   return response.data;
 };
 
@@ -24,7 +24,7 @@ const remove = async (id: number) => {
 };
 
 const reorder = async (id: number, newOrder: number, newListId: number) => {
-  const response = await axios.put<ITask[]>(`${API_URL}/tasks/${id}`, {
+  const response = await axios.put<Task[]>(`${API_URL}/tasks/${id}`, {
     newOrder,
     newListId,
   });

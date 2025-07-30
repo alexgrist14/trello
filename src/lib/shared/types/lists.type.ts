@@ -1,10 +1,10 @@
-import type { ITask } from "./tasks.type";
+import type { Task } from "./tasks.type";
 
-export interface IList {
+export interface List {
   id: number;
   boardId: number;
   title: string;
   createdAt: string;
   updatedAt: string;
-  tasks: ITask[];
+  tasks: Task[];
 }

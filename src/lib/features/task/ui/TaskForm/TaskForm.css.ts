@@ -22,3 +22,7 @@ export const buttons = style({
   display: "grid",
   gap: "10px",
 });
+
+export const confirm = style({
+  width: "300px",
+});

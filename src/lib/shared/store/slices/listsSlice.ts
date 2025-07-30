@@ -1,9 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { IList } from "../../types/lists.type";
-import type { ITask } from "../../types/tasks.type";
+import type { List } from "../../types/lists.type";
+import type { Task } from "../../types/tasks.type";
 
 interface ListsInitialStateType {
-  lists: IList[];
+  lists: List[];
   isLoading?: boolean;
 }
 
@@ -18,10 +18,10 @@ const listsSlice = createSlice({
     setIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setLists: (state, action: PayloadAction<IList[]>) => {
+    setLists: (state, action: PayloadAction<List[]>) => {
       state.lists = action.payload;
     },
-    updateList: (state, action: PayloadAction<Partial<IList>>) => {
+    updateList: (state, action: PayloadAction<Partial<List>>) => {
       const index = state.lists.findIndex(
         (list) => list.id === action.payload.id
       );
@@ -29,10 +29,9 @@ const listsSlice = createSlice({
         state.lists[index] = { ...state.lists[index], ...action.payload };
       }
     },
-    addTaskToList: (state, action: PayloadAction<ITask>) => {
+    addTaskToList: (state, action: PayloadAction<Task>) => {
       const { listId } = action.payload;
       const listIndex = state.lists.findIndex((list) => list.id === listId);
-      console.log(listIndex);
       if (listIndex !== -1) {
         const list = state.lists[listIndex];
         if (list.tasks) {
@@ -42,21 +41,61 @@ const listsSlice = createSlice({
         }
       }
     },
-    updateTaskInList: (state, action: PayloadAction<ITask>) => {
+    updateTaskInList: (state, action: PayloadAction<Task>) => {
       const { id, listId } = action.payload;
       const listIndex = state.lists.findIndex((list) => list.id === listId);
       if (listIndex !== -1) {
         const taskIndex = state.lists[listIndex].tasks.findIndex(
           (task) => task.id === id
         );
-        console.log(taskIndex);
         if (taskIndex !== -1) {
-          console.log(action.payload);
           state.lists[listIndex].tasks[taskIndex] = action.payload;
         }
       }
     },
-    removeTaskFromList: (state, action: PayloadAction<ITask>) => {
+    reorderTasksInList: (
+      state,
+      action: PayloadAction<{
+        newTask: Task;
+        oldTask: Task;
+      }>
+    ) => {
+      const { newTask, oldTask } = action.payload;
+
+      const listIndex = state.lists.findIndex(
+        (list) => list.id === newTask.listId
+      );
+      const oldListIndex = state.lists.findIndex(
+        (list) => list.id === oldTask.listId
+      );
+
+      if (listIndex !== -1) {
+        const list = state.lists[listIndex];
+        const oldList = state.lists[oldListIndex];
+
+        const tasks = state.lists[listIndex].tasks;
+        const oldTasks = state.lists[oldListIndex].tasks;
+
+        oldTasks.splice(oldTask.taskOrder - 1, 1);
+        tasks.splice(newTask.taskOrder - 1, 0, {
+          ...oldTask,
+          listId: newTask.listId,
+        });
+
+        list.tasks = tasks.map((t, i) => ({
+          ...t,
+          taskOrder: i + 1,
+        }));
+
+        if (list.id !== oldList.id) {
+          oldList.tasks = oldTasks.map((t, i) => ({
+            ...t,
+            taskOrder: i + 1,
+          }));
+        }
+      }
+    },
+    removeTaskFromList: (state, action: PayloadAction<Task>) => {
       const { id, listId } = action.payload;
       const listIndex = state.lists.findIndex((list) => list.id === listId);
       if (listIndex !== -1) {
@@ -65,7 +104,7 @@ const listsSlice = createSlice({
         );
       }
     },
-    addList: (state, action: PayloadAction<IList>) => {
+    addList: (state, action: PayloadAction<List>) => {
       state.lists.push(action.payload);
     },
     removeList: (state, action: PayloadAction<number>) => {

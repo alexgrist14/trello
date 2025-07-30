@@ -1,23 +1,19 @@
 import { useState, type FC } from "react";
-import type { ITask } from "../../types/tasks.type";
-import Task from "../Task/Task";
-import * as styles from "./List.css";
+import type { Task } from "../../types/tasks.type";
+import TaskItem from "../TaskItem/TaskItem";
+import * as styles from "./ListItem.css";
 import Button from "../Button/Button";
 import { SvgPlus } from "../../svg/SvgPlus";
-import type { IList } from "../../types/lists.type";
+import type { List } from "../../types/lists.type";
 import TaskForm from "../../../features/task/ui/TaskForm/TaskForm";
-import { useAppSelector } from "../../store";
-import { Loader } from "../Loader";
 import { Modal } from "../Modal/Modal";
-import classNames from "classnames";
 
-const List: FC<IList> = ({ id, title, tasks, boardId }) => {
-  const { isLoading } = useAppSelector((state) => state.lists);
+const ListItem: FC<List> = ({ id, title, tasks }) => {
   const [isModalActive, setIsModalActive] = useState(false);
-  const [task, setTask] = useState<ITask>();
+  const [task, setTask] = useState<Task>();
 
   return (
-    <div className={classNames(styles.container, isLoading && styles.disabled)}>
+    <div className={styles.container}>
       <Modal isActive={isModalActive} onClose={() => setIsModalActive(false)}>
         <TaskForm
           task={task}
@@ -28,20 +24,30 @@ const List: FC<IList> = ({ id, title, tasks, boardId }) => {
         />
       </Modal>
       <h3 className={styles.title}>{title}</h3>
-      {isLoading && <Loader />}
       {tasks && (
         <ul className={styles.list}>
-          {tasks.map((task) => (
-            <Task
+          {tasks.map((task, i) => (
+            <TaskItem
               onClick={() => {
                 setTask(task);
                 setIsModalActive(true);
               }}
-              key={task.id}
+              key={`${task.id} + ${i}`}
               task={task}
-              dashboardId={boardId}
             />
           ))}
+          <TaskItem
+            isHidden
+            task={{
+              id: -1,
+              title: "",
+              description: "",
+              listId: id,
+              taskOrder: tasks.length + 1,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            }}
+          />
         </ul>
       )}
       <Button
@@ -59,4 +65,4 @@ const List: FC<IList> = ({ id, title, tasks, boardId }) => {
   );
 };
 
-export default List;
+export default ListItem;

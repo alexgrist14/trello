@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { IDashboard } from "../../types/dashboard.type";
+import type { Dashboard } from "../../types/dashboard.type";
 
 interface DashboardsState {
-  dashboards: IDashboard[];
+  dashboards: Dashboard[];
 }
 
 const initialState: DashboardsState = {
@@ -13,10 +13,10 @@ const dashboardsSlice = createSlice({
   name: "dashboards",
   initialState,
   reducers: {
-    setDashboards(state, action: PayloadAction<IDashboard[]>) {
+    setDashboards(state, action: PayloadAction<Dashboard[]>) {
       state.dashboards = action.payload;
     },
-    addDashboard(state, action: PayloadAction<IDashboard>) {
+    addDashboard(state, action: PayloadAction<Dashboard>) {
       state.dashboards.push(action.payload);
     },
   },
