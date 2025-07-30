@@ -1,4 +1,4 @@
-export interface ILog {
+export interface Log {
   id: number;
   entity: string;
   entityId: number;

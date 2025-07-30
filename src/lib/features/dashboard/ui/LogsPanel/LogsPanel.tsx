@@ -1,6 +1,6 @@
 import { useEffect, useState, type RefObject } from "react";
 import { getLogsByBoard } from "../../../../shared/api/logs";
-import type { ILog } from "../../../../shared/types/log.type";
+import type { Log } from "../../../../shared/types/log.type";
 import * as styles from "./LogsPanel.css";
 import { SvgProfile } from "../../../../shared/svg/SvgProfile";
 import { getHumanDate } from "../../../../shared/utils/common";
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const LogsPanel = ({ isActive, boardId, ref }: Props) => {
-  const [logs, setLogs] = useState<ILog[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
 
   useEffect(() => {
     getLogsByBoard(boardId).then((data) => {
