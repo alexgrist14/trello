@@ -31,6 +31,7 @@ globalStyle("body", {
   margin: "0",
   height: "100%",
   scrollBehavior: "smooth",
+  overflow: "hidden",
 });
 
 globalStyle("a", {
